@@ -1,0 +1,1 @@
+-- Set up all the tables/relations.
