@@ -15,8 +15,7 @@ DROP TABLE Problem;
 -- Create Tables For Entities
 CREATE TABLE Meteor_Customer
 (
-	cust_phone varchar(13) PRIMARY KEY,
-	cust_email varchar(40),
+	contact_info varchar(40) PRIMARY KEY,
 	cust_name varchar(40),
 	cust_address varchar(140) 
 );
@@ -25,8 +24,8 @@ CREATE TABLE Car
 (
 	license_number varchar(10) PRIMARY KEY,
 	model varchar(40),
-	cust_phone varchar(13),
-	CONSTRAINT FK_Customer FOREIGN KEY (cust_phone) REFERENCES Meteor_Customer(cust_phone)
+	contact_info varchar(40),
+	CONSTRAINT FK_Customer FOREIGN KEY (contact_info) REFERENCES Meteor_Customer(contact_info)
 );
 CREATE TABLE Mechanic
 (
@@ -96,7 +95,7 @@ CREATE TABLE Uses
 	CONSTRAINT FK_Part FOREIGN KEY (part_name) REFERENCES Part(part_name)
 );
 
--- Holds parts used by the finished repair jobs
+-- Holds parts used by the finished repair jobs(none relevant)
 CREATE TABLE Used
 (
 	RepairJob_id varchar(10),

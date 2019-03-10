@@ -13,19 +13,19 @@ Delete Problem;
 alter session set nls_date_format='YYYY-MM-DD HH24:MI:SS';
 
 -- Meteor Customer
-INSERT INTO Meteor_Customer (cust_phone, cust_email, cust_name, cust_address)
-	VALUES ('111-123-4567', NULL, 'Caleb', '1234 Lane Santa Clara, CA 95050');
-INSERT INTO Meteor_Customer (cust_phone, cust_email, cust_name, cust_address)
-	VALUES ('222-123-4567', 'carlo@gmail.com', 'Carlo', '1182 5th Ave. Santa Rosa, CA 95089');
-INSERT INTO Meteor_Customer (cust_phone, cust_email, cust_name, cust_address)
-	VALUES ('333-123-4567', NULL, 'Andres', '1375 Pauline Dr. Sunnyvale, CA 94087');
+INSERT INTO Meteor_Customer (contact_info, cust_name, cust_address)
+	VALUES ('111-123-4567', 'Caleb', '1234 Lane Santa Clara, CA 95050');
+INSERT INTO Meteor_Customer (contact_info, cust_name, cust_address)
+	VALUES ('carlo@gmail.com', 'Carlo', '1182 5th Ave. Santa Rosa, CA 95089');
+INSERT INTO Meteor_Customer (contact_info, cust_name, cust_address)
+	VALUES ('333-123-4567', 'Andres', '1375 Pauline Dr. Sunnyvale, CA 94087');
 
 -- Car
-INSERT INTO Car (license_number, model, cust_phone) 
+INSERT INTO Car (license_number, model, contact_info) 
 	VALUES ('SDIE2KD', 'Toyota Tundra', '111-123-4567');
-INSERT INTO Car (license_number, model, cust_phone) 
-	VALUES ('KDKA32Q', 'Tesla Model 3', '222-123-4567');
-INSERT INTO Car (license_number, model, cust_phone) 
+INSERT INTO Car (license_number, model, contact_info) 
+	VALUES ('KDKA32Q', 'Tesla Model 3', 'carlo@gmail.com');
+INSERT INTO Car (license_number, model, contact_info) 
 	VALUES ('A23KDU4', 'Fiat Spider', '333-123-4567');
 
 -- Mechanic
