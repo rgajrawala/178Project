@@ -18,7 +18,7 @@ CREATE TABLE Meteor_Customer
 	cust_phone varchar(13) PRIMARY KEY,
 	cust_email varchar(40),
 	cust_name varchar(40),
-	cust_address varchar(140) 
+	cust_address varchar(140)
 );
 
 CREATE TABLE Car
@@ -105,4 +105,3 @@ CREATE TABLE Used
 	CONSTRAINT FK_Finished_RepairJob FOREIGN KEY (RepairJob_id) REFERENCES Finished_RepairJob(RepairJob_id),
 	CONSTRAINT FK_Finished_Part FOREIGN KEY (part_name) REFERENCES Part(part_name)
 );
-
