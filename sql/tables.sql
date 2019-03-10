@@ -21,7 +21,7 @@ CREATE TABLE Meteor_Customer
 	cust_address varchar(140)
 );
 
-CREATE TABLE Car with foreign key
+CREATE TABLE Car
 (
 	license_number varchar(10) PRIMARY KEY,
 	model varchar(40),
