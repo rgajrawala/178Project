@@ -21,7 +21,7 @@ CREATE TABLE Meteor_Customer
 	cust_address varchar(140)
 );
 
-CREATE TABLE Car
+CREATE TABLE Car with foreign key
 (
 	license_number varchar(10) PRIMARY KEY,
 	model varchar(40),
@@ -40,7 +40,7 @@ CREATE TABLE RepairJob
 	RepairJob_id varchar(10) PRIMARY KEY,
 	time_in DATE NOT NULL,
 	time_out DATE,
-	labor_hours INTEGER NOT NULL,
+	labor_hours INTEGER,
 	employee_id varchar(10) NOT NULL,
 	license_number varchar(10) NOT NULL,
 	CONSTRAINT FK_Mechanic FOREIGN KEY (employee_id) REFERENCES Mechanic(employee_id),
@@ -50,7 +50,7 @@ CREATE TABLE Finished_RepairJob
 (
 	RepairJob_id varchar(10) PRIMARY KEY,
 	time_in DATE NOT NULL,
-	time_out DATE,
+	time_out DATE NOT NULL,
 	labor_hours INTEGER NOT NULL,
 	employee_id varchar(10) NOT NULL,
 	license_number varchar(10) NOT NULL,
@@ -83,7 +83,7 @@ CREATE TABLE Fixed
 (
 	RepairJob_id varchar(10),
 	problem_id varchar(10),
-	CONSTRAINT FK_Finished_RepairJob_Fixes FOREIGN KEY (RepairJob_id) REFERENCES Finished_RepairJob(RepairJob_id),
+	CONSTRAINT FK_Finished_RepairJob_Fixed FOREIGN KEY (RepairJob_id) REFERENCES Finished_RepairJob(RepairJob_id),
 	CONSTRAINT FK_Finished_Problem FOREIGN KEY (problem_id) REFERENCES Problem(problem_id)
 );
 
