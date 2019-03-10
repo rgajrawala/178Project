@@ -21,11 +21,11 @@ INSERT INTO Meteor_Customer (cust_phone, cust_email, cust_name, cust_address)
 	VALUES ('333-123-4567', NULL, 'Andres', '1375 Pauline Dr. Sunnyvale, CA 94087');
 
 -- Car
-INSERT INTO Car (license_number, model, cust_phone) 
+INSERT INTO Car (license_number, model, cust_phone)
 	VALUES ('SDIE2KD', 'Toyota Tundra', '111-123-4567');
-INSERT INTO Car (license_number, model, cust_phone) 
+INSERT INTO Car (license_number, model, cust_phone)
 	VALUES ('KDKA32Q', 'Tesla Model 3', '222-123-4567');
-INSERT INTO Car (license_number, model, cust_phone) 
+INSERT INTO Car (license_number, model, cust_phone)
 	VALUES ('A23KDU4', 'Fiat Spider', '333-123-4567');
 
 -- Mechanic
@@ -53,7 +53,7 @@ INSERT INTO Part(part_name,cost) VALUES ('Tire', 100.00);
 INSERT INTO Part(part_name,cost) VALUES ('Axle', 80.00);
 INSERT INTO Part(part_name,cost) VALUES ('Window', 200.00);
 INSERT INTO Part(part_name,cost) VALUES ('Paint Bucket', 20.00);
-	
+
 -- Problem
 INSERT INTO Problem(problem_id, type) VALUES ('TI_AL_3', 'Tire Alignment Large');
 INSERT INTO Problem(problem_id, type) VALUES ('TI_RP_1', 'Tire Replace Small');
@@ -78,6 +78,3 @@ INSERT INTO Used (RepairJob_id, part_name, qty) VALUES ('r2', 'Tire', 1);
 -- Uses
 INSERT INTO Uses (RepairJob_id, part_name, qty) VALUES ('r4', 'Tire', 4);
 INSERT INTO Uses (RepairJob_id, part_name, qty) VALUES ('r4', 'Axle', 4);
-
-
-
