@@ -35,4 +35,3 @@ BEGIN
 END;
 /
 Show errors; 
--- Test with DELETE FROM repairjob where repairjob_id = 'r4';
