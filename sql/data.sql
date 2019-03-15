@@ -21,32 +21,31 @@ INSERT INTO Meteor_Customer (cust_phone, cust_name, cust_address)
 	VALUES ('333-123-4567', 'Andres', '1375 Pauline Dr. Sunnyvale, CA 94087');
 
 -- Car
-
-INSERT INTO Car (license_number, model, cust_phone) 
+INSERT INTO Car (license_number, model, cust_phone)
 	VALUES ('SDIE2KD', 'Toyota Tundra', '111-123-4567');
-INSERT INTO Car (license_number, model, cust_phone) 
+INSERT INTO Car (license_number, model, cust_phone)
 	VALUES ('KDKA32Q', 'Tesla Model 3', '222-329-3918');
-INSERT INTO Car (license_number, model, cust_phone) 
+INSERT INTO Car (license_number, model, cust_phone)
 	VALUES ('A23KDU4', 'Fiat Spider', '333-123-4567');
 
 -- Mechanic
-INSERT INTO Mechanic (employee_id, emp_phone, emp_name)
+INSERT INTO Mechanic (mechanic_id, emp_phone, emp_name)
 	VALUES ('e1', '123-235-6436', 'Billy');
-INSERT INTO Mechanic (employee_id, emp_phone, emp_name)
+INSERT INTO Mechanic (mechanic_id, emp_phone, emp_name)
 	VALUES ('e2', '123-464-6436', 'Bob');
-INSERT INTO Mechanic (employee_id, emp_phone, emp_name)
+INSERT INTO Mechanic (mechanic_id, emp_phone, emp_name)
 	VALUES ('e3', '154-235-6436', 'Joe');
 
 -- Repair Job
-INSERT INTO RepairJob (RepairJob_id,time_in, time_out, labor_hours, employee_id, license_number)
+INSERT INTO RepairJob (RepairJob_id,time_in, time_out, labor_hours, mechanic_id, license_number)
 	VALUES ('r4', '2019-03-07 08:00:00', NULL, 10, 'e1', 'A23KDU4');
-INSERT INTO RepairJob (RepairJob_id,time_in, time_out, labor_hours, employee_id, license_number)
+INSERT INTO RepairJob (RepairJob_id,time_in, time_out, labor_hours, mechanic_id, license_number)
 	VALUES ('r3', '2019-03-08 12:00:00', NULL, 10, 'e2', 'KDKA32Q');
 
 -- Finished Repair Job
-INSERT INTO Finished_RepairJob (RepairJob_id,time_in, time_out, labor_hours, employee_id, license_number)
+INSERT INTO Finished_RepairJob (RepairJob_id,time_in, time_out, labor_hours, mechanic_id, license_number)
 	VALUES ('r2', '2019-03-03 11:00:00', '2019-03-08 14:00:00', 8, 'e3', 'SDIE2KD');
-INSERT INTO Finished_RepairJob (RepairJob_id,time_in, time_out, labor_hours, employee_id, license_number)
+INSERT INTO Finished_RepairJob (RepairJob_id,time_in, time_out, labor_hours, mechanic_id, license_number)
 	VALUES ('r1', '2019-02-04 08:00:00', '2019-02-05 08:00:00', 11, 'e1', 'A23KDU4');
 
 -- Part

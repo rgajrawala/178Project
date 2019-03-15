@@ -1,3 +1,9 @@
+.form-control-inline {
+	display: inline;
+	width: 300px;
+}
+
+/******************************************************************************/
 /* https://ihatetomatoes.net/demos/css3-preloader-transition/css/main.css */
 
 #loader-wrapper {
@@ -139,3 +145,5 @@
 	width: 80%;
 	max-width: 978px;
 }
+
+/******************************************************************************/

@@ -23,6 +23,8 @@ class Index extends React.Component {
 				return <MechanicShow />;
 			case 'revenue-show':
 				return <RevenueShow />;
+			case 'admin':
+				return <Admin />;
 		}
 	}
 
@@ -51,6 +53,8 @@ class Index extends React.Component {
 									<a className={`dropdown-item ${this.state.currentPage === 'repairjob-show' ? 'active' : ''}`} href="#repairjob-show" onClick={this.onNavClick}>Show Completed Repair Jobs</a>
 									<a className={`dropdown-item ${this.state.currentPage === 'mechanic-show' ? 'active' : ''}`} href="#mechanic-show" onClick={this.onNavClick}>Show Mechanic Information</a>
 									<a className={`dropdown-item ${this.state.currentPage === 'revenue-show' ? 'active' : ''}`} href="#revenue-show" onClick={this.onNavClick}>Show Revenue Information</a>
+									<div className="dropdown-divider"></div>
+									<a className={`dropdown-item ${this.state.currentPage === 'admin' ? 'active' : ''}`} href="#admin" onClick={this.onNavClick}>Show Admin Page</a>
 								</div>
 							</li>
 						</ul>

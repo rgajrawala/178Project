@@ -6,5 +6,10 @@
 -- Add trigger for Deleting from Repairjob
 @del_rp.sql
 
---Insert Initial Values
+-- Insert Initial Values
 @data.sql
+
+-- Functions/Procedures
+@queries.sql
+
+COMMIT;

@@ -10,7 +10,7 @@ DECLARE
 	t_pname Used.part_name%TYPE;
 	t_qty used.qty%type;
 BEGIN
-	INSERT INTO Finished_RepairJob (RepairJob_id,time_in, time_out, labor_hours, employee_id, license_number) VALUES (:old.RepairJob_id,:old.time_in, :old.time_out, :old.labor_hours, :old.employee_id, :old.license_number);
+	INSERT INTO Finished_RepairJob (RepairJob_id,time_in, time_out, labor_hours, mechanic_id, license_number) VALUES (:old.RepairJob_id,:old.time_in, :old.time_out, :old.labor_hours, :old.mechanic_id, :old.license_number);
 	-- Copy Fixed.
 	OPEN problems_fixed_cur;
 	LOOP
