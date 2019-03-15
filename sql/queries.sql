@@ -1,21 +1,27 @@
---queries
-
 create or replace procedure newRepairJob(
 	p_repairjob_id in RepairJob.repairjob_id%type,
 	p_time_in in RepairJob.time_in%type, 
 	p_employee_id in RepairJob.employee_id%type, 
 
-	p_contact_info in Meteor_Customer.contact_info%type,
+	p_cust_phone in Meteor_Customer.cust_phone%type,
+	p_cust_email in Meteor_Customer.cust_email%type,
 	p_cust_name in Meteor_Customer.cust_name%type,
 	p_cust_address in Meteor_Customer.cust_address%type,
 
 	p_license_number in Car.license_number%type,
-	p_model in Car.model%type) is
+	p_model in Car.model%type) as
+res INTEGER;
 begin
-	 insert into RepairJob(repairjob_id, time_in, employee_id, license_number) 
-	 	values(p_repairjob_id, p_time_in, p_employee_id, p_license_number);
-	 insert into Car values(p_license_number, p_model, p_contact_info);
-	 insert into Meteor_Customer values(p_contact_info, p_cust_name, p_cust_address);
+	select count(*) into res from Car where license_number = p_license_number;
+	if res = 0 then
+		insert into Car values(p_license_number, p_model, p_cust_phone);
+	end if;
+	insert into RepairJob(repairjob_id, time_in, employee_id, license_number) 
+		values(p_repairjob_id, p_time_in, p_employee_id, p_license_number);
+	select count(*) into res from Meteor_Customer where cust_phone = p_cust_phone;
+	if res = 0 then
+	 	insert into Meteor_Customer values(p_cust_phone, p_cust_email, p_cust_name, p_cust_address);
+	 end if;
 end;
 /
 show errors;
@@ -86,39 +92,39 @@ create or replace function getCustName(p_repairjob_id in RepairJob.repairjob_id%
 return Meteor_Customer.cust_name%type
 is
 	res Meteor_Customer.cust_name%type;
-	tmp_contact_info Meteor_Customer.contact_info%type;
+	tmp_cust_phone Meteor_Customer.cust_phone%type;
 begin
-	select contact_info into tmp_contact_info from Car
+	select cust_phone into tmp_cust_phone from Car
 	where license_number = (select license_number from Finished_RepairJob where repairjob_id = p_repairjob_id);
-	select cust_name into res from Meteor_Customer where contact_info = tmp_contact_info;
+	select cust_name into res from Meteor_Customer where cust_phone = tmp_cust_phone;
 	return res;
 end;
 /
 show errors;
 --test: select getCustName('r1') from dual;
 
-create or replace function getContactInfo(p_repairjob_id in RepairJob.repairjob_id%type)
-return Meteor_Customer.contact_info%type
+create or replace function getPhone(p_repairjob_id in RepairJob.repairjob_id%type)
+return Meteor_Customer.cust_phone%type
 is
-	res Meteor_Customer.contact_info%type;
+	res Meteor_Customer.cust_phone%type;
 begin
 
-	select contact_info into res from Car where license_number = (select license_number from Finished_RepairJob where repairjob_id = p_repairjob_id);
+	select cust_phone into res from Car where license_number = (select license_number from Finished_RepairJob where repairjob_id = p_repairjob_id);
 	return res;
 end;
 /
 show errors;
---test: select getContactInfo('r1') from dual;
+--test: select getPhone('r1') from dual;
 
 create or replace function getAddress(p_repairjob_id in RepairJob.repairjob_id%type)
 return Meteor_Customer.cust_address%type
 is
 	res Meteor_Customer.cust_address%type;
-	tmp_contact_info Meteor_Customer.contact_info%type;
+	tmp_cust_phone Meteor_Customer.cust_phone%type;
 begin
-	select contact_info into tmp_contact_info from Car
+	select cust_phone into tmp_cust_phone from Car
 	where license_number = (select license_number from Finished_RepairJob where repairjob_id = p_repairjob_id);
-	select cust_address into res from Meteor_Customer where contact_info = tmp_contact_info;
+	select cust_address into res from Meteor_Customer where cust_phone = tmp_cust_phone;
 	return res;
 end;
 /
@@ -172,11 +178,24 @@ begin
 		where employee_id = (select employee_id from Finished_RepairJob where repairjob_id = p_repairjob_id);
 	select labor_hours into labor_hrs from Finished_RepairJob where repairjob_id = p_repairjob_id;
 	res := hrly_rate * labor_hrs;
-	return res;
+	return res + 30;
 end;
 /
 show errors;
 --test: select getServiceCharge('r1') from dual;
+
+create or replace function getsDiscount(p_cust_phone Meteor_Customer.cust_phone%type)
+return INTEGER as
+res INTEGER;
+begin
+	select count(*) into res from Finished_RepairJob where license_number in (select license_number from Car where cust_phone = p_cust_phone);
+	if res > 1 then
+		return 1;
+	end if;
+	return 0;
+end;
+/
+show errors;
 
 --only use for finished repairjobs
 create or replace function getTotalCost(p_repairjob_id in RepairJob.repairjob_id%type)
@@ -190,6 +209,9 @@ begin
 		cost_of_parts := 0;
 	end if;
 	cost_of_labor := getServiceCharge(p_repairjob_id);
+	if getsDiscount(getPhone(p_repairjob_id)) = 1 then
+		return (cost_of_labor + cost_of_parts) * 0.9;
+	end if;
 	return cost_of_labor + cost_of_parts;
 end;
 /
@@ -267,3 +289,4 @@ end;
 /
 show errors;
 --test: select gettotalrevenue('2019-02-01 08:00:00','2019-03-27 08:00:00') from dual;
+
