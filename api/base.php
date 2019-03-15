@@ -1,5 +1,8 @@
 <?php
 
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+
 header('Content-type: application/json');
 
 $conn = oci_connect('rgajrawa', '178Project', '//dbserver.engr.scu.edu/db11g');

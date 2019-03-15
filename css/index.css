@@ -1,3 +1,7 @@
+body {
+	padding-bottom: 50px;
+}
+
 .form-control-inline {
 	display: inline;
 	width: 300px;

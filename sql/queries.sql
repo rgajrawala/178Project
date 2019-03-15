@@ -1,21 +1,25 @@
 create or replace procedure newRepairJob(
 	p_repairjob_id in RepairJob.repairjob_id%type,
 	p_time_in in RepairJob.time_in%type,
-	p_employee_id in RepairJob.employee_id%type,
-
-	p_model in Car.model%type) as
-res INTEGER;
+	p_mechanic_id in RepairJob.mechanic_id%type,
+	p_license_number in RepairJob.license_number%type,
+	p_model in Car.model%type,
+	p_cust_phone in Meteor_Customer.cust_phone%type,
+	p_cust_email in Meteor_Customer.cust_email%type,
+	p_cust_name in Meteor_Customer.cust_name%type,
+	p_cust_address in Meteor_Customer.cust_address%type
+) as res INTEGER;
 begin
+	select count(*) into res from Meteor_Customer where cust_phone = p_cust_phone;
+	if res = 0 then
+		insert into Meteor_Customer values(p_cust_phone, p_cust_email, p_cust_name, p_cust_address);
+	end if;
 	select count(*) into res from Car where license_number = p_license_number;
 	if res = 0 then
 		insert into Car values(p_license_number, p_model, p_cust_phone);
 	end if;
-	insert into RepairJob(repairjob_id, time_in, employee_id, license_number)
-		values(p_repairjob_id, p_time_in, p_employee_id, p_license_number);
-	select count(*) into res from Meteor_Customer where cust_phone = p_cust_phone;
-	if res = 0 then
-	 	insert into Meteor_Customer values(p_cust_phone, p_cust_email, p_cust_name, p_cust_address);
-	 end if;
+	insert into RepairJob(repairjob_id, time_in, mechanic_id, license_number)
+		values(p_repairjob_id, p_time_in, p_mechanic_id, p_license_number);
 end;
 /
 show errors;
@@ -33,8 +37,11 @@ show errors;
 --test: exec updateRepairJob('r3', 15, '2019-03-20 08:00:00')
 
 --repairjob must have been updated with remaining attributes
-create or replace procedure finishRepairJob(p_repairjob_id in RepairJob.repairjob_id%type) is
+create or replace procedure finishRepairJob(
+	p_repairjob_id in RepairJob.repairjob_id%type,
+	p_time_out in RepairJob.time_out%type) is
 begin
+	update RepairJob set time_out = p_time_out WHERE RepairJob_id = p_repairjob_id;
 	delete from RepairJob where repairjob_id = p_repairjob_id;
 end;
 /
@@ -97,7 +104,7 @@ end;
 show errors;
 --test: select getCustName('r1') from dual;
 
-create or replace function getPhone(p_repairjob_id in RepairJob.repairjob_id%type)
+create or replace function getCustPhone(p_repairjob_id in RepairJob.repairjob_id%type)
 return Meteor_Customer.cust_phone%type
 is
 	res Meteor_Customer.cust_phone%type;
@@ -108,9 +115,9 @@ begin
 end;
 /
 show errors;
---test: select getPhone('r1') from dual;
+--test: select getCustPhone('r1') from dual;
 
-create or replace function getAddress(p_repairjob_id in RepairJob.repairjob_id%type)
+create or replace function getCustAddress(p_repairjob_id in RepairJob.repairjob_id%type)
 return Meteor_Customer.cust_address%type
 is
 	res Meteor_Customer.cust_address%type;
@@ -123,7 +130,7 @@ begin
 end;
 /
 show errors;
---test: select getAddress('r1') from dual;
+--test: select getCustAddress('r1') from dual;
 
 create or replace function getModel(p_repairjob_id in RepairJob.repairjob_id%type)
 return Car.model%type
@@ -165,14 +172,13 @@ create or replace function getServiceCharge(p_repairjob_id in RepairJob.repairjo
 return NUMBER
 is
 	res NUMBER;
-	hrly_rate Mechanic.hourly_pay_rate%type;
+	-- hrly_rate Mechanic.hourly_pay_rate%type;
 	labor_hrs RepairJob.labor_hours%type;
 begin
-	select hourly_pay_rate into hrly_rate from Mechanic
-		where mechanic_id = (select mechanic_id from Finished_RepairJob where repairjob_id = p_repairjob_id);
+	-- select hourly_pay_rate into hrly_rate from Mechanic
+	-- 	where mechanic_id = (select mechanic_id from Finished_RepairJob where repairjob_id = p_repairjob_id);
 	select labor_hours into labor_hrs from Finished_RepairJob where repairjob_id = p_repairjob_id;
-	hrly_rate := hrly_rate + 5;
-	res := hrly_rate * labor_hrs;
+	res := 25 * labor_hrs;
 	return res + 30;
 end;
 /
@@ -197,14 +203,24 @@ create or replace function getTotalCost(p_repairjob_id in RepairJob.repairjob_id
 return NUMBER
 is
 	cost_of_parts Part.cost%type;
+	cost_of_part Part.cost%type;
+	qty_of_part Used.qty%type;
 	cost_of_labor NUMBER;
+	cursor c_parts is SELECT cost, qty from Used NATURAL JOIN Part where repairjob_id = p_repairjob_id;
 begin
-	select sum(cost) into cost_of_parts from (Used NATURAL JOIN Part) where repairjob_id = p_repairjob_id;
-	if cost_of_parts is null then
-		cost_of_parts := 0;
-	end if;
+	cost_of_parts := 0;
+	open c_parts;
+	loop
+	fetch c_parts into cost_of_part, qty_of_part;
+		exit when c_parts%notfound;
+		cost_of_parts := cost_of_parts + (cost_of_part * qty_of_part);
+	end loop;
+	-- select sum(cost) into cost_of_parts from (Used NATURAL JOIN Part) where repairjob_id = p_repairjob_id;
+	-- if cost_of_parts is null then
+	-- 	cost_of_parts := 0;
+	-- end if;
 	cost_of_labor := getServiceCharge(p_repairjob_id);
-	if getsDiscount(getPhone(p_repairjob_id)) = 1 then
+	if getsDiscount(getCustPhone(p_repairjob_id)) == 1 then
 		return (cost_of_labor + cost_of_parts) * 0.9;
 	end if;
 	return cost_of_labor + cost_of_parts;
@@ -247,7 +263,7 @@ as
 res Mechanic.mechanic_id%type;
 begin
 	select mechanic_id into res from
-	(select mechanic_id, sum(labor_hours) as sum from Finished_RepairJob group by mechanic_id order by sum asc) where rownum = 1;
+	(select mechanic_id, sum(labor_hours) as sum from Finished_RepairJob natural join Mechanic group by mechanic_id order by sum asc) where rownum = 1;
 	return res;
 end;
 /
@@ -275,7 +291,7 @@ begin
 	res := 0;
 	for l_repairjob in repairjob_cursor
 	loop
-		if l_repairjob.time_out > p_start and l_repairjob.time_out < p_finish then
+		if l_repairjob.time_out >= p_start and l_repairjob.time_out <= p_finish then
 			res := res + getTotalCost(l_repairjob.repairjob_id);
 		end if;
 	end loop;

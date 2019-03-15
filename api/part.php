@@ -26,16 +26,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 if (
 	$_SERVER['REQUEST_METHOD'] == 'POST' &&
 	isset($_POST['partName']) &&
-	isset($_POST['cost'])
+	isset($_POST['partCost'])
 ) {
-	$sql = 'INSERT INTO Part (part_name, cost) VALUES (:partName, :cost)';
+	$sql = 'BEGIN createPart(:partName, :partCost); END;';
 	$query = oci_parse($conn, $sql);
 
 	$partName = $_POST['partName'];
-	$cost = $_POST['cost'];
+	$partCost = $_POST['partCost'];
 
 	oci_bind_by_name($query, ':partName', $partName);
-	oci_bind_by_name($query, ':cost', $cost);
+	oci_bind_by_name($query, ':partCost', $partCost);
 
 	if (!oci_execute($query)) {
 		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
@@ -43,19 +43,13 @@ if (
 		exit(1);
 	}
 
-	oci_fetch($query);
-
-	if (oci_num_rows($query) == 0) {
-		header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-		echo json_encode(oci_error());
-		exit(1);
-	}
-
 	header($_SERVER['SERVER_PROTOCOL'] . ' 200 OK', true, 200);
+	echo json_encode(0);
 	exit(0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 header($_SERVER['SERVER_PROTOCOL'] . '400 Bad Request', true, 400);
+echo json_encode(0);
 exit(1);

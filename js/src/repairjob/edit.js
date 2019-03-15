@@ -6,7 +6,7 @@ class RepairJobEdit extends React.Component {
 		repairJobID: -1,
 		repairJob: null,
 		partNames: [],
-		problemIDs: [],
+		problems: [],
 	}
 
 	componentDidMount() {
@@ -41,7 +41,7 @@ class RepairJobEdit extends React.Component {
 			url: 'api/problem.php',
 			success: (data, textStatus, jqXHR) => {
 				this.setState({
-					problemIDs: data
+					problems: data
 				});
 			},
 			error: (jqXHR, textStatus, errorThrown) => {
@@ -51,6 +51,13 @@ class RepairJobEdit extends React.Component {
 	}
 
 	getRepairJob = e => {
+		if (e.target.value == -1) {
+			return this.setState({
+				repairJobID: -1,
+				repairJob: null
+			});
+		}
+
 		this.setState({
 			repairJobID: e.target.value
 		}, () => {
@@ -124,6 +131,7 @@ class RepairJobEdit extends React.Component {
 			repairJob: {
 				...this.state.repairJob,
 				PARTS: this.state.repairJob.PARTS.concat([{
+					REPAIRJOB_ID: this.state.repairJob.REPAIRJOB_ID,
 					PART_NAME: partName,
 					QTY: 1
 				}])
@@ -144,8 +152,8 @@ class RepairJobEdit extends React.Component {
 			repairJob: {
 				...this.state.repairJob,
 				PROBLEMS: this.state.repairJob.PROBLEMS.concat([{
-					PROBLEM_ID: problemID,
-					QTY: 1
+					REPAIRJOB_ID: this.state.repairJob.REPAIRJOB_ID,
+					PROBLEM_ID: problemID
 				}])
 			}
 		});
@@ -238,8 +246,8 @@ class RepairJobEdit extends React.Component {
 	}
 
 	renderProblemOptions() {
-		return this.state.problemIDs.map(problemID => (
-			<option value={problemID}>{problemID}</option>
+		return this.state.problems.map(problem => (
+			<option value={problem.PROBLEM_ID}>{problem.TYPE} ({problem.PROBLEM_ID})</option>
 		));
 	}
 
