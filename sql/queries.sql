@@ -177,6 +177,7 @@ begin
 	select hourly_pay_rate into hrly_rate from Mechanic
 		where employee_id = (select employee_id from Finished_RepairJob where repairjob_id = p_repairjob_id);
 	select labor_hours into labor_hrs from Finished_RepairJob where repairjob_id = p_repairjob_id;
+	hrly_rate := hrly_rate + 5;
 	res := hrly_rate * labor_hrs;
 	return res + 30;
 end;
