@@ -220,7 +220,7 @@ begin
 	-- 	cost_of_parts := 0;
 	-- end if;
 	cost_of_labor := getServiceCharge(p_repairjob_id);
-	if getsDiscount(getCustPhone(p_repairjob_id)) == 1 then
+	if getsDiscount(getCustPhone(p_repairjob_id)) = 1 then
 		return (cost_of_labor + cost_of_parts) * 0.9;
 	end if;
 	return cost_of_labor + cost_of_parts;
@@ -285,15 +285,13 @@ return NUMBER
 as
 res NUMBER;
 Cursor repairjob_cursor is
-	select * from Finished_RepairJob;
-l_repairjob repairjob_cursor%rowtype;
+	select * from Finished_RepairJob WHERE time_out BETWEEN p_start AND p_finish;
+	l_repairjob repairjob_cursor%rowtype;
 begin
 	res := 0;
 	for l_repairjob in repairjob_cursor
 	loop
-		if l_repairjob.time_out >= p_start and l_repairjob.time_out <= p_finish then
-			res := res + getTotalCost(l_repairjob.repairjob_id);
-		end if;
+		res := res + getTotalCost(l_repairjob.repairjob_id);
 	end loop;
 	return res;
 end;
