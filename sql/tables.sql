@@ -28,35 +28,39 @@ CREATE TABLE Car
 	cust_phone varchar(40),
 	CONSTRAINT FK_Customer FOREIGN KEY (cust_phone) REFERENCES Meteor_Customer(cust_phone)
 );
+
 CREATE TABLE Mechanic
 (
-	employee_id varchar(10) PRIMARY KEY,
+	mechanic_id varchar(10) PRIMARY KEY,
 	emp_phone varchar(13),
 	emp_name varchar(40),
 	hourly_pay_rate DECIMAL(7,2) DEFAULT 20.00
 );
+
 CREATE TABLE RepairJob
 (
 	RepairJob_id varchar(10) PRIMARY KEY,
 	time_in DATE NOT NULL,
 	time_out DATE,
 	labor_hours INTEGER,
-	employee_id varchar(10) NOT NULL,
+	mechanic_id varchar(10) NOT NULL,
 	license_number varchar(10) NOT NULL,
-	CONSTRAINT FK_Mechanic FOREIGN KEY (employee_id) REFERENCES Mechanic(employee_id),
+	CONSTRAINT FK_Mechanic FOREIGN KEY (mechanic_id) REFERENCES Mechanic(mechanic_id),
 	CONSTRAINT FK_Car FOREIGN KEY (license_number) REFERENCES Car(license_number)
 );
+
 CREATE TABLE Finished_RepairJob
 (
 	RepairJob_id varchar(10) PRIMARY KEY,
 	time_in DATE NOT NULL,
 	time_out DATE NOT NULL,
 	labor_hours INTEGER NOT NULL,
-	employee_id varchar(10) NOT NULL,
+	mechanic_id varchar(10) NOT NULL,
 	license_number varchar(10) NOT NULL,
-	CONSTRAINT FK_Mechanic_Finished FOREIGN KEY (employee_id) REFERENCES Mechanic(employee_id),
+	CONSTRAINT FK_Mechanic_Finished FOREIGN KEY (mechanic_id) REFERENCES Mechanic(mechanic_id),
 	CONSTRAINT FK_Car_Finished FOREIGN KEY (license_number) REFERENCES Car(license_number)
 );
+
 CREATE TABLE Part
 (
 	part_name varchar(40) PRIMARY KEY,
@@ -68,6 +72,7 @@ CREATE TABLE Problem
 	problem_id varchar(10) PRIMARY KEY,
 	type varchar(40)
 );
+
 
 -- Create Relationship Tables
 CREATE TABLE Fixes

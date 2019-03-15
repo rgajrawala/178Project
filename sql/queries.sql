@@ -1,14 +1,8 @@
 create or replace procedure newRepairJob(
 	p_repairjob_id in RepairJob.repairjob_id%type,
-	p_time_in in RepairJob.time_in%type, 
-	p_employee_id in RepairJob.employee_id%type, 
+	p_time_in in RepairJob.time_in%type,
+	p_employee_id in RepairJob.employee_id%type,
 
-	p_cust_phone in Meteor_Customer.cust_phone%type,
-	p_cust_email in Meteor_Customer.cust_email%type,
-	p_cust_name in Meteor_Customer.cust_name%type,
-	p_cust_address in Meteor_Customer.cust_address%type,
-
-	p_license_number in Car.license_number%type,
 	p_model in Car.model%type) as
 res INTEGER;
 begin
@@ -16,7 +10,7 @@ begin
 	if res = 0 then
 		insert into Car values(p_license_number, p_model, p_cust_phone);
 	end if;
-	insert into RepairJob(repairjob_id, time_in, employee_id, license_number) 
+	insert into RepairJob(repairjob_id, time_in, employee_id, license_number)
 		values(p_repairjob_id, p_time_in, p_employee_id, p_license_number);
 	select count(*) into res from Meteor_Customer where cust_phone = p_cust_phone;
 	if res = 0 then
@@ -29,7 +23,7 @@ show errors;
 
 create or replace procedure updateRepairJob(
 	p_repairjob_id in RepairJob.repairjob_id%type,
-	p_labor_hours in RepairJob.labor_hours%type, 
+	p_labor_hours in RepairJob.labor_hours%type,
 	p_time_out in RepairJob.time_out%type) is
 begin
 	update RepairJob set labor_hours = p_labor_hours, time_out = p_time_out where repairjob_id = p_repairjob_id;
@@ -57,7 +51,7 @@ end;
 show errors;
 
 --problem must exist
-create or replace procedure linkProblem(p_repairjob_id in RepairJob.repairjob_id%type, 
+create or replace procedure linkProblem(p_repairjob_id in RepairJob.repairjob_id%type,
 	p_problem_id in Problem.problem_id%type) is
 begin
 	insert into Fixes values(p_repairjob_id, p_problem_id);
@@ -75,8 +69,8 @@ show errors;
 
 --part must exist
 create or replace procedure linkPart(
-	p_repairjob_id in RepairJob.repairjob_id%type, 
-	p_part_name in Part.part_name%type, 
+	p_repairjob_id in RepairJob.repairjob_id%type,
+	p_part_name in Part.part_name%type,
 	p_qty in Uses.qty%type) is
 begin
 	insert into Uses values(p_repairjob_id, p_part_name, p_qty);
@@ -168,14 +162,14 @@ show errors;
 --test: select getTimeOut('r1') from dual;
 
 create or replace function getServiceCharge(p_repairjob_id in RepairJob.repairjob_id%type)
-return NUMBER 
-is 
+return NUMBER
+is
 	res NUMBER;
 	hrly_rate Mechanic.hourly_pay_rate%type;
 	labor_hrs RepairJob.labor_hours%type;
 begin
 	select hourly_pay_rate into hrly_rate from Mechanic
-		where employee_id = (select employee_id from Finished_RepairJob where repairjob_id = p_repairjob_id);
+		where mechanic_id = (select mechanic_id from Finished_RepairJob where repairjob_id = p_repairjob_id);
 	select labor_hours into labor_hrs from Finished_RepairJob where repairjob_id = p_repairjob_id;
 	res := hrly_rate * labor_hrs;
 	return res + 30;
@@ -235,24 +229,24 @@ show errors;
 
 
 create or replace function getMechanicWithMostHours
-return Mechanic.employee_id%type
+return Mechanic.mechanic_id%type
 as
-res Mechanic.employee_id%type;
+res Mechanic.mechanic_id%type;
 begin
-	select employee_id into res from 
-	(select employee_id, sum(labor_hours) as sum from Finished_RepairJob group by employee_id order by sum desc) where rownum = 1;
+	select mechanic_id into res from
+	(select mechanic_id, sum(labor_hours) as sum from Finished_RepairJob group by mechanic_id order by sum desc) where rownum = 1;
 	return res;
 end;
 /
 show errors;
 
 create or replace function getMechanicWithLeastHours
-return Mechanic.employee_id%type
+return Mechanic.mechanic_id%type
 as
-res Mechanic.employee_id%type;
+res Mechanic.mechanic_id%type;
 begin
-	select employee_id into res from 
-	(select employee_id, sum(labor_hours) as sum from Finished_RepairJob group by employee_id order by sum asc) where rownum = 1;
+	select mechanic_id into res from
+	(select mechanic_id, sum(labor_hours) as sum from Finished_RepairJob group by mechanic_id order by sum asc) where rownum = 1;
 	return res;
 end;
 /
@@ -263,7 +257,7 @@ return NUMBER
 as
 res NUMBER;
 begin
-	select avg(sum) into res from (select sum(labor_hours) as sum from Finished_RepairJob group by employee_id order by sum asc);
+	select avg(sum) into res from (select sum(labor_hours) as sum from Finished_RepairJob group by mechanic_id order by sum asc);
 	return res;
 end;
 /
