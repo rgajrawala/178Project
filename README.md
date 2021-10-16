@@ -2,7 +2,7 @@
 Meteor Car Dealership Project for COEN 178
 
 ## How-To
-+ `git clone https://github.com/usandfriends/178Project` where you want it
++ `git clone` where you want it
 + Run `sql/init-db.sql` to set up database
 + Open `178Project` in your browser
 
